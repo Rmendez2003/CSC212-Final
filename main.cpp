@@ -50,5 +50,48 @@ int main()
 	Rectangle rect;
 	std::vector<Rectangle> rectangle_vec;
 
+    //fills vector with rectangles of random sizes and writes the vectors onto an image
+	FillVector(rect, rectangle_vec, image);
+	StartImage(image, rectangle_vec);
+	texture.loadFromImage(image);
+	sprite.setTexture(texture);
+
+
+	while (window.isOpen())
+	{
+		while(window.pollEvent(ev))
+		{   
+            //closes window
+			if (ev.type == sf::Event::Closed)
+			{
+				window.close();
+			}
+			if (ev.type == sf::Event::KeyReleased)
+			{   
+                //checks if spacebar has been pressed
+				if(ev.key.code == sf::Keyboard::Space)
+				{
+					spaceIspressed = true;
+				}
+			}
+		}
+
+        //updates image
+		texture.loadFromImage(image);
+		sprite.setTexture(texture);
+		window.clear();
+        
+        //runs sort algorithm if spacebar has been pressed
+		if(spaceIspressed)
+		{
+			BubbleSort(rectangle_vec, image, window, texture, sprite);
+			spaceIspressed = false;
+		}
+
+        //draws updated image to display
+		window.draw(sprite);
+		window.display();
+	}
+
 	return 0;
 }

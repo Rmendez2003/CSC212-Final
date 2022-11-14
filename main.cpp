@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
-#include <SFML/Graphics.hpp>
 #include <ctime>
 
 //defines rectangle to hold coordinate information along with height and width 
@@ -116,7 +115,6 @@ void BubbleSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWin
 
 int main()
 {
-    
 	srand(time(NULL));
 
     //opens window and creates event
@@ -124,7 +122,7 @@ int main()
 	int height = 800;
 	bool spaceIspressed = false;
 
-	sf::RenderWindow window(sf::VideoMode(width, height), "Merge Sort");
+	sf::RenderWindow window(sf::VideoMode(width, height), "Bubble Sort");
 	sf::Event ev;
 
     //creates an image to be diplayed on the window

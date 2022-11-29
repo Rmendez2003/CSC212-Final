@@ -15,6 +15,13 @@ struct Rectangle
 	sf::Color colour = sf::Color::White;
 };
 
+void printArray(std::vector<Rectangle> vect){
+    for(int i = 0; i < vect.size(); i++){
+        std::cout << vect[i].height << ", ";
+    }
+    std::cout << std::endl;
+}
+
 //function to fill vector with enough rectangles to fill up the image
 void FillVector(Rectangle rec, std::vector<Rectangle> &rec_vec, sf::Image Image)
 {
@@ -30,7 +37,7 @@ void FillVector(Rectangle rec, std::vector<Rectangle> &rec_vec, sf::Image Image)
 
 		rec_vec.push_back(rec);
 
-		xOffset += 5;
+		xOffset += 4;
 	}
 }
 
@@ -99,6 +106,38 @@ void swap(int bigIdx, int smallIdx, std::vector<Rectangle>& rec_vec, sf::Image& 
 	window.display();
 }
 
+//function to draw the current orientation of the vector on screen
+void DrawVec(std::vector<Rectangle>& printVector, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite, int width, int height){
+	window.clear();
+
+	for (int i = 0; i < printVector.size(); i++)
+	{	
+		//blacks out the space of the current vector (so it can be refilled)
+		for (int z = 0; z < printVector[i].width; z++)
+		{
+			for(int h = 0; h < printVector[i].height; h++)
+			{
+				image.setPixel(z, h, sf::Color::Black);
+			}
+		}
+
+		//fills in the current vector in white
+		for (int x = 0; x < printVector[i].width; x++)
+		{
+			for (int y = 0; y < printVector[i].height; y++)
+			{
+				image.setPixel(printVector[i].x_location + x, printVector[i].y_location + y, sf::Color::Red);
+			}
+		}
+	}
+
+	//updates image and draws in on the window
+	texture.loadFromImage(image);
+	sprite.setTexture(texture);
+	window.draw(sprite);
+	window.display();
+}
+
 //Sorts the rectangles using the merge sort method
 void MergeSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite, int width, int height){
     if(rec_vec.size() < 2){
@@ -155,62 +194,81 @@ void MergeSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWind
 	DrawVec(rec_vec, image, window, texture, sprite, width, height);
 }
 
+//Sorts the rectangles using the insertionsort method  (Selection sort appears extremly fast since only a max of N swaps need to occur unlike in insertion sort and in bubble sort)
+void SelectionSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite)
+{
+    int i, j, min_idx;
+ 
+    //go through each element of the subarray
+    for (int i = 0; i < rec_vec.size()-1; i++)
+    {
+		
+		//find minimum element
+        min_idx = i;
+        for(j = i+1; j < rec_vec.size(); j++){
+
+			//slow down rate due to swapping
+			for (int x = 0; x < rec_vec[j].width; x++)
+			{
+				for (int y = 0; y < rec_vec[j].height; y++)
+				{
+					image.setPixel(rec_vec[j].x_location + x, rec_vec[j].y_location + y, sf::Color::White);
+				}
+			}
+			//updates image and draws in on the window
+			texture.loadFromImage(image);
+			sprite.setTexture(texture);
+			window.draw(sprite);
+			window.display();
+
+			if (rec_vec[j].height < rec_vec[min_idx].height){
+				min_idx = j;
+			}
+		}
+		
+        //swap minimum element with current boundary
+        if(min_idx != i){
+			swap(i, min_idx, rec_vec, image, window, texture, sprite);
+		}
+    }
+}
+
+//Sorts the rectangles using the insertionsort method
+void InsertionSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite)
+{
+    Rectangle tempRec;
+	int j;
+	
+	//for loop through each element
+    for (int i = 1; i < rec_vec.size(); i++)
+    {
+        tempRec = rec_vec[i];
+        j = i - 1;
+
+        while (j >= 0 && rec_vec[j].height > tempRec.height)
+        {
+            //rec_vec[j + 1] = rec_vec[j];
+			swap(j, j+1, rec_vec, image, window, texture, sprite);
+            j--;
+        }
+    }
+}
+
 
 //Sorts the rectangles using the bubblesort method
 void BubbleSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite)
 {
-	Rectangle tempRec;
-	int currX;
+	// Rectangle tempRec;
+	// int currX;
 
-	for(int i =0; i < rec_vec.size(); i++)
+	for(int i = 0; i < rec_vec.size(); i++)
 	{
 		for (int j = 0; j < rec_vec.size() -1; j++)
 		{   
             //if value to the right is less than the current postion value
 			if(rec_vec[j].height > rec_vec[j + 1].height)
 			{
-				window.clear();
-
-				//Draw in bigger rectangle, at the x position of the smaller rectangle
-				for (int x = 0; x < rec_vec[j].width; x++)
-				{
-					for (int y = 0; y < rec_vec[j].height; y++)
-					{
-						image.setPixel(rec_vec[j + 1].x_location + x, rec_vec[j].y_location + y, rec_vec[j].colour);
-					}
-				}
-				//delete bigger rectangle by setting all of its pixels to black
-				for (int x = 0; x < rec_vec[j].width; x++)
-				{
-					for (int y = 0; y < rec_vec[j].height; y++)
-					{
-						image.setPixel(rec_vec[j].x_location + x, rec_vec[j].y_location + y, sf::Color::Black);
-					}
-				}
-				//draws smaller rectangle in postion of the older rectangle
-				for (int x = 0; x < rec_vec[j + 1].width; x++)
-				{
-					for (int y = 0; y < rec_vec[j + 1].height; y++)
-					{
-						image.setPixel(rec_vec[j].x_location + x, rec_vec[j + 1].y_location + y, rec_vec[j].colour);
-					}
-				}
-
-                //swaps x locations of the two rectangles
-				currX = rec_vec[j].x_location;
-				rec_vec[j].x_location = rec_vec[j + 1].x_location;
-				rec_vec[j + 1].x_location = currX;
-				
-                //swaps big and small rectangles' positions in the vector
-				tempRec = rec_vec[j];
-				rec_vec[j] = rec_vec[j + 1];
-				rec_vec[j + 1] = tempRec;
-
-                //updates image and draws in on the window
-				texture.loadFromImage(image);
-				sprite.setTexture(texture);
-				window.draw(sprite);
-				window.display();
+				swap(j, j+1, rec_vec, image, window, texture, sprite);
 			}
 		}
 	}
@@ -220,12 +278,15 @@ int main()
 {
 	srand(time(NULL));
 
-    //opens window and creates event
+    //opens window and creates events for each sort algorithm
 	int width = 1000;
 	int height = 800;
-	bool spaceIspressed = false;
+	bool bPress = false;
+	bool mPress = false;
+	bool iPress = false;
+	bool sPress = false;
 
-	sf::RenderWindow window(sf::VideoMode(width, height), "Bubble Sort");
+	sf::RenderWindow window(sf::VideoMode(width, height), "Sort");
 	sf::Event ev;
 
     //creates an image to be diplayed on the window
@@ -253,6 +314,8 @@ int main()
 
     //fills vector with rectangles of random sizes and writes the vectors onto an image
 	FillVector(rect, rectangle_vec, image);
+	// check for mergesort
+	//std::vector<Rectangle> temp = rectangle_vec;
 	StartImage(image, rectangle_vec);
 	texture.loadFromImage(image);
 	sprite.setTexture(texture);
@@ -269,24 +332,62 @@ int main()
 			}
 			if (ev.type == sf::Event::KeyReleased)
 			{   
-                //checks if spacebar has been pressed
-				if(ev.key.code == sf::Keyboard::Space)
-				{
-					spaceIspressed = true;
+                //checks if letter has been pressed
+				if(ev.key.code == sf::Keyboard::B){
+					bPress = true;
+					//std::cout << "True" << std::endl;
+				}
+				if(ev.key.code == sf::Keyboard::M){
+					mPress = true;
+					//std::cout << "True" << std::endl;
+				}
+				if(ev.key.code == sf::Keyboard::I){
+					iPress = true;
+					//std::cout << "True" << std::endl;
+				}
+				if(ev.key.code == sf::Keyboard::S){
+					sPress = true;
+					//std::cout << "True" << std::endl;
 				}
 			}
+			// 	// if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
+			// 	// 	shape.move(0.0f, -0.1f);
+			// 	// }
+			// 	// if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
+			// 	// 	shape.move(0.0f, 0.1f);
+			// 	// }
+			// }
 		}
+		
 
         //updates image
 		texture.loadFromImage(image);
 		sprite.setTexture(texture);
 		window.clear();
-        
-        //runs sort algorithm if spacebar has been pressed
-		if(spaceIspressed)
+        //runs sort algorithm if valid letter has been pressed
+		if(bPress)
 		{
 			BubbleSort(rectangle_vec, image, window, texture, sprite);
-			spaceIspressed = false;
+			bPress = false;
+		}
+		if(mPress)
+		{
+			MergeSort(rectangle_vec, image, window, texture, sprite, width, height);
+			StartImage(image, rectangle_vec);
+			texture.loadFromImage(image);
+			sprite.setTexture(texture);
+
+			mPress = false;
+		}
+		if(iPress)
+		{
+			InsertionSort(rectangle_vec, image, window, texture, sprite);
+			iPress = false;
+		}
+		if(sPress)
+		{
+			SelectionSort(rectangle_vec, image, window, texture, sprite);
+			sPress = false;
 		}
 
         //draws updated image to display

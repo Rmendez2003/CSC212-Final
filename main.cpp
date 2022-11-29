@@ -52,6 +52,62 @@ void StartImage(sf::Image &image, std::vector<Rectangle> rec_vec)
 }
 
 
+//Sorts the rectangles using the merge sort method
+void MergeSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite, int width, int height){
+    if(rec_vec.size() < 2){
+        return;
+    }
+	//get mid point and segment vector into left and right vector
+    int mid = rec_vec.size()/2;
+
+    std::vector<Rectangle> left;
+    for(int i = 0; i < mid; i++){
+        left.push_back(rec_vec[i]);
+    }
+
+
+    std::vector<Rectangle> right;
+    for(int i = mid; i < rec_vec.size(); i++){
+        right.push_back(rec_vec[i]);
+    }
+
+	//recursively call function on segmented vectors
+    MergeSort(left, image, window, texture, sprite, width, height);
+    MergeSort(right, image, window, texture, sprite, width, height);
+
+    //combine vectors
+    int leftIdx = 0, rightIdx = 0, currIdx = 0;
+    while(leftIdx < left.size() && rightIdx < right.size()){
+        if(left[leftIdx].height < right[rightIdx].height){
+			left[leftIdx].x_location = rec_vec[currIdx].x_location;
+			rec_vec[currIdx] = left[leftIdx];
+            currIdx++;
+            leftIdx++;
+        }else{
+			right[rightIdx].x_location = rec_vec[currIdx].x_location;
+			rec_vec[currIdx] = right[rightIdx];
+            currIdx++;
+            rightIdx++;
+        }
+    }
+
+    //only one will run to fill in the segmented vector that was not exhausted 
+    while(leftIdx < left.size()){
+		left[leftIdx].x_location = rec_vec[currIdx].x_location;
+		rec_vec[currIdx] = left[leftIdx];
+        currIdx++;
+        leftIdx++;
+    }
+    while(rightIdx < right.size()){
+		right[rightIdx].x_location = rec_vec[currIdx].x_location;
+		rec_vec[currIdx] = right[rightIdx];
+		// rec_vec[currIdx].x_location = right[rightIdx].x_location;
+        currIdx++;
+        rightIdx++;
+    }
+	DrawVec(rec_vec, image, window, texture, sprite, width, height);
+}
+
 
 //Sorts the rectangles using the bubblesort method
 void BubbleSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite)

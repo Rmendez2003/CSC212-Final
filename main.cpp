@@ -51,6 +51,53 @@ void StartImage(sf::Image &image, std::vector<Rectangle> rec_vec)
 	
 }
 
+//function to swap the position of two vectors
+void swap(int bigIdx, int smallIdx, std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite){
+	window.clear();
+
+	//Draw in bigger rectangle, at the x position of the smaller rectangle
+	for (int x = 0; x < rec_vec[bigIdx].width; x++)
+	{
+		for (int y = 0; y < rec_vec[bigIdx].height; y++)
+		{
+			image.setPixel(rec_vec[smallIdx].x_location + x, rec_vec[bigIdx].y_location + y, rec_vec[bigIdx].colour);
+		}
+	}
+	//delete bigger rectangle by setting all of its pixels to black
+	for (int x = 0; x < rec_vec[bigIdx].width; x++)
+	{
+		for (int y = 0; y < rec_vec[bigIdx].height; y++)
+		{
+			image.setPixel(rec_vec[bigIdx].x_location + x, rec_vec[bigIdx].y_location + y, sf::Color::Black);
+		}
+	}
+	//draws smaller rectangle in postion of the older rectangle
+	for (int x = 0; x < rec_vec[smallIdx].width; x++)
+	{
+		for (int y = 0; y < rec_vec[smallIdx].height; y++)
+		{
+			image.setPixel(rec_vec[bigIdx].x_location + x, rec_vec[smallIdx].y_location + y, rec_vec[bigIdx].colour);
+		}
+	}
+	Rectangle tempRec;
+	int currX;
+
+	//swaps x locations of the two rectangles
+	currX = rec_vec[bigIdx].x_location;
+	rec_vec[bigIdx].x_location = rec_vec[smallIdx].x_location;
+	rec_vec[smallIdx].x_location = currX;
+	
+	//swaps big and small rectangles' positions in the vector
+	tempRec = rec_vec[bigIdx];
+	rec_vec[bigIdx] = rec_vec[smallIdx];
+	rec_vec[smallIdx] = tempRec;
+
+	//updates image and draws in on the window
+	texture.loadFromImage(image);
+	sprite.setTexture(texture);
+	window.draw(sprite);
+	window.display();
+}
 
 //Sorts the rectangles using the merge sort method
 void MergeSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite, int width, int height){

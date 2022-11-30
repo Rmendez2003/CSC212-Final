@@ -22,6 +22,8 @@ void printArray(std::vector<Rectangle> vect){
     std::cout << std::endl;
 }
 
+
+
 //function to fill vector with enough rectangles to fill up the image
 void FillVector(Rectangle rec, std::vector<Rectangle> &rec_vec, sf::Image Image)
 {
@@ -44,7 +46,7 @@ void FillVector(Rectangle rec, std::vector<Rectangle> &rec_vec, sf::Image Image)
 //Creates the start image by coloring all vectors white in their randomized locations
 void StartImage(sf::Image &image, std::vector<Rectangle> rec_vec)
 {
-
+	
 	for (int i = 0; i < rec_vec.size(); i++)
 	{
 		for (int x = 0; x < rec_vec[i].width; x++)
@@ -59,7 +61,7 @@ void StartImage(sf::Image &image, std::vector<Rectangle> rec_vec)
 }
 
 //function to swap the position of two vectors
-void swap(int bigIdx, int smallIdx, std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite){
+void swapPos(int bigIdx, int smallIdx, std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite){
 	window.clear();
 
 	//Draw in bigger rectangle, at the x position of the smaller rectangle
@@ -78,6 +80,7 @@ void swap(int bigIdx, int smallIdx, std::vector<Rectangle>& rec_vec, sf::Image& 
 			image.setPixel(rec_vec[bigIdx].x_location + x, rec_vec[bigIdx].y_location + y, sf::Color::Black);
 		}
 	}
+
 	//draws smaller rectangle in postion of the older rectangle
 	for (int x = 0; x < rec_vec[smallIdx].width; x++)
 	{
@@ -112,21 +115,12 @@ void DrawVec(std::vector<Rectangle>& printVector, sf::Image& image, sf::RenderWi
 
 	for (int i = 0; i < printVector.size(); i++)
 	{	
-		//blacks out the space of the current vector (so it can be refilled)
-		for (int z = 0; z < printVector[i].width; z++)
-		{
-			for(int h = 0; h < printVector[i].height; h++)
-			{
-				image.setPixel(z, h, sf::Color::Black);
-			}
-		}
-
 		//fills in the current vector in white
 		for (int x = 0; x < printVector[i].width; x++)
 		{
 			for (int y = 0; y < printVector[i].height; y++)
 			{
-				image.setPixel(printVector[i].x_location + x, printVector[i].y_location + y, sf::Color::Red);
+				image.setPixel(printVector[i].x_location + x, printVector[i].y_location + y, sf::Color::White);
 			}
 		}
 	}
@@ -157,6 +151,7 @@ void MergeSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWind
         right.push_back(rec_vec[i]);
     }
 
+
 	//recursively call function on segmented vectors
     MergeSort(left, image, window, texture, sprite, width, height);
     MergeSort(right, image, window, texture, sprite, width, height);
@@ -164,33 +159,41 @@ void MergeSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWind
     //combine vectors
     int leftIdx = 0, rightIdx = 0, currIdx = 0;
     while(leftIdx < left.size() && rightIdx < right.size()){
-        if(left[leftIdx].height < right[rightIdx].height){
+		if(left[leftIdx].height < right[rightIdx].height){
+			Blackout(left, image, leftIdx);
+			//change the original vector at the current index with the left vector at the left index
 			left[leftIdx].x_location = rec_vec[currIdx].x_location;
 			rec_vec[currIdx] = left[leftIdx];
             currIdx++;
             leftIdx++;
         }else{
+			Blackout(right, image, rightIdx);
+			//change the original vector at the current index with the right vector at the right index
 			right[rightIdx].x_location = rec_vec[currIdx].x_location;
 			rec_vec[currIdx] = right[rightIdx];
             currIdx++;
             rightIdx++;
         }
     }
+	
 
     //only one will run to fill in the segmented vector that was not exhausted 
     while(leftIdx < left.size()){
+		Blackout(left, image, leftIdx);
 		left[leftIdx].x_location = rec_vec[currIdx].x_location;
 		rec_vec[currIdx] = left[leftIdx];
         currIdx++;
         leftIdx++;
     }
     while(rightIdx < right.size()){
+		Blackout(right, image, rightIdx);
 		right[rightIdx].x_location = rec_vec[currIdx].x_location;
 		rec_vec[currIdx] = right[rightIdx];
-		// rec_vec[currIdx].x_location = right[rightIdx].x_location;
         currIdx++;
         rightIdx++;
     }
+
+	//drawn multiple times to visulaize easier
 	DrawVec(rec_vec, image, window, texture, sprite, width, height);
 }
 
@@ -228,7 +231,7 @@ void SelectionSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::Render
 		
         //swap minimum element with current boundary
         if(min_idx != i){
-			swap(i, min_idx, rec_vec, image, window, texture, sprite);
+			swapPos(i, min_idx, rec_vec, image, window, texture, sprite);
 		}
     }
 }
@@ -248,7 +251,7 @@ void InsertionSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::Render
         while (j >= 0 && rec_vec[j].height > tempRec.height)
         {
             //rec_vec[j + 1] = rec_vec[j];
-			swap(j, j+1, rec_vec, image, window, texture, sprite);
+			swapPos(j, j+1, rec_vec, image, window, texture, sprite);
             j--;
         }
     }
@@ -258,9 +261,6 @@ void InsertionSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::Render
 //Sorts the rectangles using the bubblesort method
 void BubbleSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite)
 {
-	// Rectangle tempRec;
-	// int currX;
-
 	for(int i = 0; i < rec_vec.size(); i++)
 	{
 		for (int j = 0; j < rec_vec.size() -1; j++)
@@ -268,7 +268,7 @@ void BubbleSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWin
             //if value to the right is less than the current postion value
 			if(rec_vec[j].height > rec_vec[j + 1].height)
 			{
-				swap(j, j+1, rec_vec, image, window, texture, sprite);
+				swapPos(j, j+1, rec_vec, image, window, texture, sprite);
 			}
 		}
 	}
@@ -285,6 +285,7 @@ int main()
 	bool mPress = false;
 	bool iPress = false;
 	bool sPress = false;
+	bool qPress = false;
 
 	sf::RenderWindow window(sf::VideoMode(width, height), "Sort");
 	sf::Event ev;
@@ -349,6 +350,10 @@ int main()
 					sPress = true;
 					//std::cout << "True" << std::endl;
 				}
+				if(ev.key.code == sf::Keyboard::Q){
+					qPress = true;
+					//std::cout << "True" << std::endl;
+				}
 			}
 			// 	// if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
 			// 	// 	shape.move(0.0f, -0.1f);
@@ -389,7 +394,6 @@ int main()
 			SelectionSort(rectangle_vec, image, window, texture, sprite);
 			sPress = false;
 		}
-
         //draws updated image to display
 		window.draw(sprite);
 		window.display();

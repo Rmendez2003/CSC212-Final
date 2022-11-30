@@ -3,37 +3,46 @@
 #include <vector>
 #include <iostream>
 #include <ctime>
+#include <cstdlib> //for randomizing balance on acc
 
+//Default Constructor
 Account::Account(){
     std::string userName, passWord;
 };
 
-Account::Account(std::string user, std::string pass, double bal){
+//Parametarized constructor
+Account::Account(std::string user, std::string pass){
+    srand(time(NULL)+ (user[0] + user[2]));
     this->username = user;
     this->password = pass;
-    this->balance = bal;
+    this->balance = rand() % (100000-0) + 0;
 };
 
-void Account::printAcc(){
-    // current date/time based on current system
-   time_t now = std::time(0);
 
-   // convert now to string form
-   char* dt = std::ctime(&now);
-   std::cout << std::endl;
+//Prints all most updated information of account
+void Account::printAcc(){
+    //Current date/time based on current system
+    time_t now = std::time(0);
+
+    //Convert now to string form
+    char* dt = std::ctime(&now);
+    std::cout << std::endl;
     std::cout << "-----------------------------" << std::endl;
-    // std::cout << "Username: " << this->username << std::endl;
-    // std::cout << "Password: " << this->password << std::endl;
+    std::cout << "Username: " << this->username << std::endl;
+    std::cout << "Password: " << this->password << std::endl;
     std::cout << "Current Balance as of " << dt << "is: " << this->balance << std::endl;
     std::cout << "-----------------------------" << std::endl;
     std::cout << std::endl;
 
 };
 
-double Account::deposit(){
+//Deposits user inputted amount into account
+long double Account::deposit(){
     bool depositTrue = false;
-    double depositAmount;
+    long double depositAmount;
     int count = 0;
+
+    //Ensures that user inputs a valid positive number
     while(depositTrue == false){
         if (count == 0){
             std::cout << "Enter the amount you would like to deposit" << std::endl;
@@ -52,10 +61,14 @@ double Account::deposit(){
     return this->balance;
 };
 
-double Account::withdraw(){
+
+//Withdraws amount specified by the user from the account
+long double Account::withdraw(){
     bool withdrawTrue = false;
-    double withdrawAmount;
+    long double withdrawAmount;
     int count = 0;
+
+    //Checks that desired withdrawal amount is not more than the balance available
     while(withdrawTrue == false){
         if (count == 0){
             std::cout << "Enter the amount you would like to withdraw" << std::endl;
@@ -74,4 +87,38 @@ double Account::withdraw(){
 
     return this->balance;
 };
+
+//Generates user specified amount of accounts, with random usernames, passwords, and amounts
+//Side Note: We created this because creating 1,000 objects of type account by hand did not sound pleasing
+std::vector<Account> Account::accGenerator(){
+    int count = 0;
+
+    //Asks user how many accounts they want to generate
+    int accNum;
+    std::cout << "Enter the number of accounts that you would like to generate: ";
+    std::cin >> accNum;
+
+    while(count < accNum){
+        std::string randUserName = "";
+        std::string randPass = "";
+        //Populating the username
+        srand(time(NULL)+count+1);//Ensures that it is actually random everytime rand is called, otherwise it wasn't truly random, chances of duplicaton are almost impossible
+        for (int i = 0; i < (rand() % (15-5) + 5); i++){
+            randUserName += possChar[(rand() % (51-0) + 0)];
+            randPass += possChar[(rand() % (51-0) + 0)];
+        }
+        Account acc1(randUserName,randPass);
+
+        //Pushes newly random created account into a vector of accounts
+        unsortedAcc.push_back(acc1);
+        count += 1;
+    }
+
+    //Traverses through account vector and prints of information of each account stored in the vector
+    for(int j = 0; j < unsortedAcc.size(); j++){
+        unsortedAcc[j].printAcc();
+    }
+    return unsortedAcc;
+};
+
 

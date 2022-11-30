@@ -97,12 +97,11 @@ std::vector<Account> Account::accGenerator(){
     int accNum;
     std::cout << "Enter the number of accounts that you would like to generate: ";
     std::cin >> accNum;
-
+    srand(time(NULL)+count+1);//Ensures that it is actually random everytime rand is called, otherwise it wasn't truly random, chances of duplicaton are almost impossible
     while(count < accNum){
         std::string randUserName = "";
         std::string randPass = "";
         //Populating the username
-        srand(time(NULL)+count+1);//Ensures that it is actually random everytime rand is called, otherwise it wasn't truly random, chances of duplicaton are almost impossible
         for (int i = 0; i < (rand() % (15-5) + 5); i++){
             randUserName += possChar[(rand() % (51-0) + 0)];
             randPass += possChar[(rand() % (51-0) + 0)];
@@ -114,11 +113,8 @@ std::vector<Account> Account::accGenerator(){
         count += 1;
     }
 
-    //Traverses through account vector and prints of information of each account stored in the vector
-    for(int j = 0; j < unsortedAcc.size(); j++){
-        unsortedAcc[j].printAcc();
-    }
     return unsortedAcc;
 };
+
 
 

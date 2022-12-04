@@ -132,6 +132,24 @@ void DrawVec(std::vector<Rectangle>& printVector, sf::Image& image, sf::RenderWi
 	window.display();
 }
 
+//Sorts the rectangles using the quick sort method
+void QuickSort(std::vector<Rectangle>& rec_vec, int start, int end, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite)
+{
+
+    // base case
+    if (start >= end)
+        return;
+
+    // partitioning the array
+    int p = partition(rec_vec, start, end, image, window, texture, sprite);
+
+    // Sorting the left part
+    QuickSort(rec_vec, start, p - 1, image, window, texture, sprite);
+
+    // Sorting the right part
+    QuickSort(rec_vec, p + 1, end, image, window, texture, sprite);
+}
+
 //Sorts the rectangles using the merge sort method
 void MergeSort(std::vector<Rectangle>& rec_vec, sf::Image& image, sf::RenderWindow &window, sf::Texture texture, sf::Sprite sprite, int width, int height){
     if(rec_vec.size() < 2){

@@ -305,50 +305,72 @@ void BubbleSort(std::vector<Account>& rec_vec, sf::Image& image, sf::RenderWindo
 	}
 }
 
-int main()
+/// @brief 
+/// @param argc 
+/// @param argv 
+/// @return 
+int main(int argc, char* argv[])
 {
 	srand(time(NULL));
 
     //opens window and creates events for each sort algorithm
 	int width = 1000;
-	int height = 800;
+	int balance = 1000;
+
+	//booleans for button press
 	bool bPress = false;
 	bool mPress = false;
 	bool iPress = false;
 	bool sPress = false;
 	bool qPress = false;
-
-	sf::RenderWindow window(sf::VideoMode(width, height), "Sort");
+	
+	
+	sf::RenderWindow window(sf::VideoMode(width, balance), "Account based on Balance");
 	sf::Event ev;
 
     //creates an image to be diplayed on the window
 	sf::Image image;
-	image.create(width, height);
+	image.create(width, balance);
 
     //makes background of image black
 	for (int i = 0; i < width; i++)
 	{
-		for(int j = 0; j < height; j++)
+		for(int j = 0; j < balance; j++)
 		{
 			image.setPixel(i, j, sf::Color::Black);
 		}
 	}
-
+	
 
 	sf::Texture texture;
 	texture.loadFromImage(image);
 	sf::Sprite sprite;
 	sprite.setTexture(texture);
 
+	//holds postion for each new account
+	int CurrXposition = 0;
+
     //vector to hold all rectangles
-	Rectangle rect;
-	std::vector<Rectangle> rectangle_vec;
+	std::vector<Account> acc_vec;
+	std::vector<Account> accIteration;
+	Account temp(image, CurrXposition);
+
+	//Color Vector for visualizing created accounts
+	std::vector<sf::Color> accColor = {sf::Color::Magenta, sf::Color::Blue, sf::Color::Green, sf::Color::Yellow, sf::Color::Red};
 
     //fills vector with rectangles of random sizes and writes the vectors onto an image
-	FillVector(rect, rectangle_vec, image);
-	// check for mergesort
-	//std::vector<Rectangle> temp = rectangle_vec;
-	StartImage(image, rectangle_vec);
+	temp.accGenerator(acc_vec, image, CurrXposition);
+
+	//Create an Account (useing command line)
+	int currentAcc = 1;
+	Account first(acc_vec, image, CurrXposition, argv, accColor, currentAcc);
+	first.deposit(150, image);
+	acc_vec.push_back(first);
+	accIteration = acc_vec;
+
+
+	//draw accounts to screen
+	StartImage(image, acc_vec);
 	texture.loadFromImage(image);
 	sprite.setTexture(texture);
 
@@ -425,6 +447,12 @@ int main()
 			SelectionSort(rectangle_vec, image, window, texture, sprite);
 			sPress = false;
 		}
+		if(qPress)
+		{
+			QuickSort(rectangle_vec, 0, rectangle_vec.size(), image, window, texture, sprite);
+			qPress = false;
+		}
+
         //draws updated image to display
 		window.draw(sprite);
 		window.display();
@@ -432,3 +460,4 @@ int main()
 
 	return 0;
 }
+    

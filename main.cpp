@@ -374,9 +374,9 @@ int main(int argc, char* argv[])
 	texture.loadFromImage(image);
 	sprite.setTexture(texture);
 
-
 	while (window.isOpen())
 	{
+
 		while(window.pollEvent(ev))
 		{   
             //closes window
@@ -389,7 +389,7 @@ int main(int argc, char* argv[])
                 //checks if letter has been pressed
 				if(ev.key.code == sf::Keyboard::B){
 					bPress = true;
-					//std::cout << "True" << std::endl;
+					// std::cout << std::flush << "True" << std::endl;
 				}
 				if(ev.key.code == sf::Keyboard::M){
 					mPress = true;
@@ -407,14 +407,94 @@ int main(int argc, char* argv[])
 					qPress = true;
 					//std::cout << "True" << std::endl;
 				}
+				if(ev.key.code == sf::Keyboard::Space){
+					switch(currentAcc){
+						case 3:
+						{
+							//resets account to original mixed shape
+							acc_vec = accIteration;
+							
+							//creates second account with a balance of 750
+							Account second(acc_vec, image, CurrXposition, argv, accColor, currentAcc);
+							second.deposit(750, image);
+							acc_vec.push_back(second);
+
+							//keeps track of mixed shape for account
+							accIteration = acc_vec;
+							break;
+						}
+						case 5:
+						{
+							//resets account to original mixed shape
+							acc_vec = accIteration;
+							
+							//creates third account with a balance of 250 by creating it with 500 and withdrawing 250
+							Account third(acc_vec, image, CurrXposition, argv, accColor, currentAcc);
+							third.deposit(500, image);
+							third.withdraw(250, image);
+							acc_vec.push_back(third);
+
+							//keeps track of mixed shape for account
+							accIteration = acc_vec;
+							break;
+						}
+						case 7:
+						{
+							//resets account to original mixed shape
+							acc_vec = accIteration;
+							
+							//creates fourth account with a balance of 900 by creating it with 500 and depositing 400
+							Account fourth(acc_vec, image, CurrXposition, argv, accColor, currentAcc);
+							fourth.deposit(500, image);
+							fourth.deposit(400, image);
+							acc_vec.push_back(fourth);
+
+							//keeps track of mixed shape for account
+							accIteration = acc_vec;
+							break;
+						}
+						case 9:
+						{
+							//resets account to original mixed shape
+							acc_vec = accIteration;
+							
+							//creates fifth account with a balance of 432
+							Account fifth(acc_vec, image, CurrXposition, argv, accColor, currentAcc);
+							fifth.deposit(915, image);
+							fifth.withdraw(300, image);
+							fifth.withdraw(125, image);
+							fifth.withdraw(85, image);
+							fifth.deposit(27, image);	
+							acc_vec.push_back(fifth);
+							//keeps track of mixed shape for account
+							accIteration = acc_vec;
+							break;
+						}
+						default:
+						{
+							//resets account to original mixed shape
+							acc_vec = accIteration;
+							//keeps track of mixed shape for account
+							accIteration = acc_vec;
+						}
+
+					}
+
+					//makes background of image black
+					for (int i = 0; i < width; i++)
+					{
+						for(int j = 0; j < balance; j++)
+						{
+							image.setPixel(i, j, sf::Color::Black);
+						}
+					}
+
+					//draw accounts to screen
+					StartImage(image, accIteration);
+					texture.loadFromImage(image);
+					sprite.setTexture(texture);
+				}
 			}
-			// 	// if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
-			// 	// 	shape.move(0.0f, -0.1f);
-			// 	// }
-			// 	// if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
-			// 	// 	shape.move(0.0f, 0.1f);
-			// 	// }
-			// }
 		}
 		
 
@@ -425,13 +505,13 @@ int main(int argc, char* argv[])
         //runs sort algorithm if valid letter has been pressed
 		if(bPress)
 		{
-			BubbleSort(rectangle_vec, image, window, texture, sprite);
+			BubbleSort(acc_vec, image, window, texture, sprite, CurrXposition);
 			bPress = false;
 		}
 		if(mPress)
 		{
-			MergeSort(rectangle_vec, image, window, texture, sprite, width, height);
-			StartImage(image, rectangle_vec);
+			MergeSort(acc_vec, image, window, texture, sprite, width, balance);
+			StartImage(image, acc_vec);
 			texture.loadFromImage(image);
 			sprite.setTexture(texture);
 
@@ -439,17 +519,17 @@ int main(int argc, char* argv[])
 		}
 		if(iPress)
 		{
-			InsertionSort(rectangle_vec, image, window, texture, sprite);
+			InsertionSort(acc_vec, image, window, texture, sprite, CurrXposition);
 			iPress = false;
 		}
 		if(sPress)
 		{
-			SelectionSort(rectangle_vec, image, window, texture, sprite);
+			SelectionSort(acc_vec, image, window, texture, sprite, CurrXposition);
 			sPress = false;
 		}
 		if(qPress)
 		{
-			QuickSort(rectangle_vec, 0, rectangle_vec.size(), image, window, texture, sprite);
+			QuickSort(acc_vec, 0, acc_vec.size()-1, image, window, texture, sprite, CurrXposition);
 			qPress = false;
 		}
 
@@ -460,4 +540,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-    

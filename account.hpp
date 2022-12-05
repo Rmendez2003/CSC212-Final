@@ -24,27 +24,27 @@ class Account{
         int x_location = 0;
         int y_location = 0;
 
-		//Constructor for random username and password
-		Account(sf::Image Image, int &xOffset){
-			//assign random balance for rectangle from 5 to 50 from the top of the window
-			this->balance = rand() % (Image.getSize().y - 50) + 5;
+	//Constructor for random username and password
+	Account(sf::Image Image, int &xOffset){
+		//assign random balance for rectangle from 5 to 50 from the top of the window
+		this->balance = rand() % (Image.getSize().y - 50) + 5;
 
-			//assign x offset
-			this->x_location = xOffset;
-			xOffset += 4;
-			this->y_location = Image.getSize().y - this->balance;
+		//assign x offset
+		this->x_location = xOffset;
+		xOffset += 4;
+		this->y_location = Image.getSize().y - this->balance;
 
-			//assign account number and password
-			std::string randUserName = "";
-			std::string randPass = "";
-			//srand(time(NULL)+count+1);//Ensures that it is actually random everytime rand is called, otherwise it wasn't truly random, chances of duplicaton are almost impossible
-			for (int i = 0; i < (rand() % (15-5) + 5); i++){
-				randUserName += possChar[(rand() % (possChar.size()-0) + 0)];
-			}
-			for (int i = 0; i < (rand() % (15-5) + 5); i++){
-				randPass += possChar[(rand() % (possChar.size()-0) + 0)];
-			}
+		//assign account number and password
+		std::string randUserName = "";
+		std::string randPass = "";
+		//srand(time(NULL)+count+1);//Ensures that it is actually random everytime rand is called, otherwise it wasn't truly random, chances of duplicaton are almost impossible
+		for (int i = 0; i < (rand() % (15-5) + 5); i++){
+			randUserName += possChar[(rand() % (possChar.size()-0) + 0)];
 		}
+		for (int i = 0; i < (rand() % (15-5) + 5); i++){
+			randPass += possChar[(rand() % (possChar.size()-0) + 0)];
+		}
+	}
 
 		//constructor for user to enter defined username and password
         Account(std::vector<Account> &acc_vec, sf::Image Image, int &xOffset, char* userInfo[], std::vector<sf::Color> &accColor, int &curr){ 
